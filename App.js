@@ -1,136 +1,214 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Button, Platform, ActivityIndicator } from 'react-native';
+import { Alert, AppRegistry, StyleSheet, View, Image, Pressable, Linking, Text, TextInput, TouchableOpacity, Button } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
+
 export default class App extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props)
         this.state = {
-            name: '',
-            email: '',
-            loading: false,
-            disabled: false
+            first_name: '',
+            email: ''
         }
-    } saveData = async (setState) => {
-
-        try {
-            let res = await fetch('https://apiss.zio.mx/apicitas_api/submit_user_info.php', {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: this.state.name,
-                    email: this.state.email,
-                }),
-            });
-            res = await res.json();
-            console.log(res)
-            this.setState({
-                loading: false,
-                disabled: false
-            });
-            Alert.alert('onPress', res.json);
-        } catch (e) {
-            console.error(e);
-            this.setState({
-                loading: false,
-                disabled: false,
-            });
-        }
-
-        /* this.setState({
-            loading: true,
-            disabled: true
-        }, () => {
-
-            
-
-
-
-
-            /*let response = await fetch('https://apiss.zio.mx/apicitas_api/submit_user_info.php', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: this.state.name,
-                    email: this.state.email,
-                }),
-            });
-
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    if (responseJson.IsSuccess) {
-                        alert(responseJson);
-                        this.setState({
-                            loading: false,
-                            disabled: false
-                        });
-                    } else {
-                        console.log(responseJson.ErrorMessage);
-                        alert(responseJson.ErrorMessage)
-                    }
-
-                }).catch((error) => {
-                    alert(error);
-                    this.setState({
-                        loading: false,
-                        disabled: false
-                    });
-                });*/
-        //});
     }
+
+    RegDataInDB = () => {
+        const { first_name } = this.state;
+        const { email } = this.state;
+
+        fetch('https://apiss.zio.mx/apicitas_api/cdos/submit_user_info.php', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ //convert data to JSON
+                name: first_name,
+                email: email
+            })
+        }).then((response) => response.json())
+            .then((responseJson) => {
+                Alert.alert(responseJson);
+                /*if (Response[0].Message == "Registered successfuly!") {
+                    //this.props.navigation.navigate("HomePage");
+                }*/
+            }).catch((error) => {
+                console.error("ERROR:" + error);
+            })
+
+
+    }
+
 
     render() {
         return (
-            <View style={styles.container}>
-                <TextInput underlineColorAndroid="transparent" placeholder="Your First Name" style={styles.textInput} onChangeText={(text) => this.setState({ name: text })} />
-                <TextInput underlineColorAndroid="transparent" placeholder="Your Last Name" style={styles.textInput} onChangeText={(text) => this.setState({ email: text })} />
-                <TouchableOpacity
-                    disabled={this.state.disabled}
-                    activeOpacity={0.8}
-                    style={styles.Btn}
-                    onPress={this.saveData}
-                >
-                    <Text style={styles.btnText}>Insert</Text>
-                </TouchableOpacity>
-                {(this.state.loading) ? (<ActivityIndicator size="large" />) : null}
+            <View style={styles1.AppStyle} >
+                <View style={styles1.TextInView}>
+                    <TextInput
+                        placeholder="Enter First Nameee"
+                        style={styles1.textInput}
+                        onChangeText={first_name => this.setState({ first_name })}
+                    />
+                </View>
 
-                <StatusBar style="auto" />
+
+                <View style={styles1.TextInView}>
+                    <TextInput
+                        placeholder="Enter Email"
+                        style={styles1.textInput}
+                        onChangeText={email => this.setState({ email })}
+                    />
+                </View>
+
+
+                <View style={styles1.ButtonView}>
+                    <Pressable
+                        style={styles1.Button}
+                        onPress={() => { this.RegDataInDB() }}
+                    >
+                        <Text style={styles1.text}>Register</Text>
+                    </Pressable>
+                </View>
             </View>
         );
     }
-} const styles = StyleSheet.create({
+}
+
+//style section
+const styles1 = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+    },
+
+    buttonContainer: {
+        margin: 20
+    },
+
+    multiButtonContainer: {
+        margin: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+
+    stretch: {
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#eee',
-        paddingHorizontal: 25,
-        paddingTop: (Platform.OS == 'ios') ? 20 : 0
+        width: 700,
+        height: 200,
+        margin: 10,
+        resizeMode: 'stretch',
     },
-    textInput: {
+
+    stretch1: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    stretch2: {
+        width: 400,
+        height: 160,
+        margin: 10,
+        resizeMode: 'stretch',
+    },
+
+    input: {
         height: 40,
+        margin: 12,
         borderWidth: 1,
-        borderColor: 'grey',
-        marginVertical: 5,
-        alignSelf: 'stretch',
-        padding: 8,
-        fontSize: 16
-    },
-    Btn: {
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        alignSelf: 'stretch',
         padding: 10,
-        marginTop: 10,
-        marginBottom: 25
     },
-    btnText: {
-        textAlign: 'center',
+
+    AppBar1: {
+        //flex: 1,
+        //appen: 1,
+        //justifyContent: 'center',
+        //alignItems: 'center',
+        //textcolor: 'red',
+        //alignItems:'center',
+        justifyContent: 'center',
+        backgroundColor: 'pink',
+        //color: 'red', 
+        //fontSize: 26 ,
+    },
+
+    AppBar2: {
+        //flex: 1,
+        margin: 5,
+        padding: 1,
+        alignItems: 'center',
+        //fontWeights: 'bold',
+        justifyContent: 'center',
+        fontSize: 15,
+        //backgroundColor: 'pink',
+        width: 300,
+        height: 20,
+    },
+
+    text: {
         color: 'white',
-        fontSize: 16
-    }
-});
+        fontSize: 16,
+        lineHeight: 21,
+        fontWeight: 'bold',
+    },
+
+    textInput: {
+        flex: 1,
+        marginBottom: 20,
+        borderBottomColor: 'grey',
+        borderBottomWidth: 1,
+        height: 30,
+        fontSize: 20,
+    },
+
+    AppBar3: {
+        //flex: 1,
+        margin: 5,
+        padding: 1,
+        alignItems: 'center',
+        //fontWeights: 'bold',
+        justifyContent: 'center',
+        fontSize: 15,
+        //backgroundColor: 'pink',
+        width: 300,
+        height: 20,
+    },
+
+    Iconn: {
+        margin: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+    AppStyle: {
+        flex: 1,
+        padding: 20,
+        marginTop: 6,
+        paddingBottom: 3,
+        width: '100%'
+
+    },
+
+    TextInView: {
+        flexDirection: 'row',
+        marginTop: 6,
+        paddingBottom: 3,
+        width: '95%',
+        padding: 2,
+    },
+
+    ButtonView: {
+        marginTop: 48,
+        alignItems: 'center'
+    },
+
+    Button: {
+        color: 'white',
+        backgroundColor: 'green',
+        height: 35,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '80%',
+        marginTop: -5
+    },
+
+})
