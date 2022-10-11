@@ -25,13 +25,19 @@ export default class App extends Component {
                 name: first_name,
                 email: email
             })
+
         }).then((response) => response.json())
+            .then((response) => {
+                alert(response[0].Message);
+            })
+
+        /*.then((response) => response.json())
             .then((responseJson) => {
-                Alert.alert(responseJson);
+                Alert.alert(responseJson[0].Message);
                 /*if (Response[0].Message == "Registered successfuly!") {
                     //this.props.navigation.navigate("HomePage");
-                }*/
-            }).catch((error) => {
+                }
+            })*/.catch((error) => {
                 console.error("ERROR:" + error);
             })
 
@@ -63,7 +69,7 @@ export default class App extends Component {
                 <View style={styles1.ButtonView}>
                     <Pressable
                         style={styles1.Button}
-                        onPress={() => { this.RegDataInDB() }}
+                        onPress={this.RegDataInDB}
                     >
                         <Text style={styles1.text}>Register</Text>
                     </Pressable>
